@@ -1,0 +1,10 @@
+<Data>
+	<Server>
+		<HttpPort>8080</HttpPort>
+		<TmlDir>../tml</TmlDir>
+		<DdsnPort>4494</DdsnPort>
+	</Server>
+
+	<Client>
+	</Client>
+</Data>
