@@ -1,8 +1,10 @@
 <Data>
 	<Server>
-		<HttpPort>8080</HttpPort>
-		<TmlDir>../tml</TmlDir>
+		<HttpPort>4498</HttpPort>
 		<DdsnPort>4494</DdsnPort>
+		<SslCert>cert.pem</SslCert>
+		<TmlDir>tml</TmlDir>
+		<DbFile>ddsn.db</DbFile>
 	</Server>
 
 	<Client>

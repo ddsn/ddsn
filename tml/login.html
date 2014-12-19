@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>DDSN Peer {{.PeerName}}</title>
+</head>
+<body>
+<h1>DDSN Peer {{.PeerName}}</h1>
+<h2>Login</h2>
+<form action="/" method="post">
+<span style="color:red">{{.Message}}</span>
+<table>
+<tr><td>Account</td><td><input name="name" /></td></tr>
+<tr><td>Password</td><td><input name="pass" type="password" /></td></tr>
+<tr><td></td><td><input type="submit" value="login" /></td></tr>
+</table>
+</form>
+<br />
+<small>More information on <a href="http://ddsn.org">the DDSN website</a> or the <a href="http://ddsn.org/wiki">the DDSN wiki</a>.</small>
+</body>
+</html>
