@@ -7,6 +7,8 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"path"
+	"strings"
 )
 
 func httpHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,6 +16,8 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 
 	if request == "/" {
 		indexHandler(w, r)
+	} else if strings.HasPrefix(request, "/res/") {
+		resourcesHandler(w, r)
 	}
 }
 
@@ -124,4 +128,22 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 		tml.Execute(w, loginContext{"Test", message})
 	}
+}
+
+func resourcesHandler(w http.ResponseWriter, r *http.Request) {
+	request := r.URL.Path
+
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	resPath := path.Clean(Config.Server.ResDir + "/" + request)
+
+	if !strings.HasPrefix(resPath, Config.Server.ResDir) {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	http.ServeFile(w, r, resPath)
 }

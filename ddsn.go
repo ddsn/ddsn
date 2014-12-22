@@ -17,6 +17,8 @@ type server struct {
 	HttpPort  int
 	DdsnPort  int
 	TmlDir    string
+	ResDir    string
+	SqlDir    string
 	DbFile    string
 }
 
@@ -59,6 +61,11 @@ func main() {
 
 	// <Connect to sqlite database>
 
+	initDb := false
+	if _, err := os.Stat(Config.Server.DbFile); os.IsNotExist(err) {
+		initDb = true
+	}
+
 	Database, err = sql.Open("sqlite3", Config.Server.DbFile)
 	defer Database.Close()
 
@@ -68,6 +75,19 @@ func main() {
 	}
 
 	fmt.Println("Connected to database "+Config.Server.DbFile)
+
+	if initDb {
+		bytes, err := ioutil.ReadFile(Config.Server.SqlDir + "/init.sql")
+
+		if err != nil {
+			fmt.Println("Error opening database initialization file init.sql: " + err.Error())
+			return
+		}
+
+		Database.Exec(string(bytes))
+
+		fmt.Println("Initialized database")
+	}
 
 	// </Connect to sqlite database>
 

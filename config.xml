@@ -4,6 +4,8 @@
 		<DdsnPort>4494</DdsnPort>
 		<SslCert>cert.pem</SslCert>
 		<TmlDir>tml</TmlDir>
+		<ResDir>tml</ResDir>
+		<SqlDir>sql</SqlDir>
 		<DbFile>ddsn.db</DbFile>
 	</Server>
 
