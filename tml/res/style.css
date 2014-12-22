@@ -1,8 +1,25 @@
 body {
 	font-family: sans-serif;
+	background-color: #eee;
 }
 
-img.logo {
-	float: right;
-	margin-right: 10px;
+div#menu {
+	float: left;
+	padding: 10px;
+}
+
+div#content {
+	margin-left: 165px;
+	padding: 10px;
+	border: 1px solid #ddd;
+	background-color: white;
+}
+
+div#footer {
+	clear: both;
+	text-align: center;
+}
+
+#menu a {
+	font-weight: bold;
 }

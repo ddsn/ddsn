@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+type Account struct {
+	Id    int
+	Name  string
+}
+
 func httpHandler(w http.ResponseWriter, r *http.Request) {
 	request := r.URL.Path
 
@@ -21,13 +26,11 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	account := 0
+func loginChecker(w http.ResponseWriter, r *http.Request) (bool, Account, string) {
 	loggedIn := false
-
-	// Determine whether we are logged in
-
 	message := ""
+
+	var account Account
 
 	if r.FormValue("logout") != "" {
 		sidCookie := http.Cookie{}
@@ -41,7 +44,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		pass := r.PostFormValue("pass")
 
 		if name != "" && pass != "" {
-			row, _ := Database.Query("SELECT id, pass, salt FROM account WHERE name LIKE $1", name)
+			row, _ := Database.Query("SELECT id, name, pass, salt FROM account WHERE name LIKE $1", name)
 			defer row.Close()
 
 			if !row.Next() {
@@ -49,7 +52,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				var corrPassHash, salt string
 
-				row.Scan(&account, &corrPassHash, &salt)
+				row.Scan(&account.Id, &account.Name, &corrPassHash, &salt)
 
 				hash := sha256.Sum256([]byte(pass+salt))
 				passHash := hex.EncodeToString(hash[:])
@@ -62,22 +65,39 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 					sidCookie.Name = "SID"
 					sidCookie.Value = "ABC123"
 
-					Sessions["ABC123"] = 15
+					Sessions["ABC123"] = account.Id
 
 					http.SetCookie(w, &sidCookie)
 
 					loggedIn = true
-					account = 15
 				}
 			}
 		} else {
 			sidCookie, err := r.Cookie("SID")
 
 			if err == nil {
-				account, loggedIn = Sessions[sidCookie.Value]
+				account.Id, loggedIn = Sessions[sidCookie.Value]
+
+				if loggedIn {
+					row, _ := Database.Query("SELECT name FROM account WHERE id = $1", account.Id)
+					defer row.Close()
+
+					if !row.Next() {
+						message = "Error: database corruption"
+						loggedIn = false
+					}
+
+					row.Scan(&account.Name)
+				}
 			}
 		}
 	}
+
+	return loggedIn, account, message
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	loggedIn, account, message := loginChecker(w, r)
 
 	// Display pages depending on logged in status
 
@@ -101,9 +121,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		type indexContext struct {
 			PeerName  string
 			Account   int
+			AccName   string
 		}
 
-		tml.Execute(w, indexContext{"Test", account})
+		tml.Execute(w, indexContext{PeerName, account.Id, account.Name})
 	} else {
 		bytes, err := ioutil.ReadFile(Config.Server.TmlDir + "/login.html")
 
@@ -126,7 +147,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			Message   string
 		}
 
-		tml.Execute(w, loginContext{"Test", message})
+		tml.Execute(w, loginContext{PeerName, message})
 	}
 }
 

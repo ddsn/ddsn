@@ -3,9 +3,16 @@
 <head>
 <title>DDSN Peer {{.PeerName}}</title>
 <link href="res/style.css" rel="stylesheet" type="text/css">
+<link href="res/favicon.ico" rel="icon" type="image/x-icon" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
+
+<div id="menu">
 <img src="res/logo.png" alt="DDSN logo" class="logo" />
+</div>
+
+<div id="content">
 <h1>DDSN Peer {{.PeerName}}</h1>
 <h2>Login</h2>
 <form action="/" method="post">
@@ -16,7 +23,13 @@
 <tr><td></td><td><input type="submit" value="login" /></td></tr>
 </table>
 </form>
+</div>
+
 <br />
+
+<div id="footer">
 <small>More information on <a href="http://ddsn.org">the DDSN website</a> or the <a href="http://ddsn.org/wiki">the DDSN wiki</a>.</small>
+</div>
+
 </body>
 </html>
