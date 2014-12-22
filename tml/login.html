@@ -9,14 +9,17 @@
 <body>
 
 <div id="menu">
-<img src="res/logo.png" alt="DDSN logo" class="logo" />
+<img src="res/logo.png" alt="DDSN logo" class="logo" /><br />
+<div style="text-align: center"><b>Peer Frontend</b></div>
 </div>
 
 <div id="content">
 <h1>DDSN Peer {{.PeerName}}</h1>
 <h2>Login</h2>
 <form action="/" method="post">
-<span style="color:red">{{.Message}}</span>
+{{if .Message}}
+<span style="color:red"><i>{{.Message}}</i></span><br /><br />
+{{end}}
 <table>
 <tr><td>Account</td><td><input name="name" /></td></tr>
 <tr><td>Password</td><td><input name="pass" type="password" /></td></tr>
@@ -28,7 +31,10 @@
 <br />
 
 <div id="footer">
-<small>More information on <a href="http://ddsn.org">the DDSN website</a> or the <a href="http://ddsn.org/wiki">the DDSN wiki</a>.</small>
+<small>
+More information about DDSN on <a href="http://ddsn.org">the website</a> and on <a href="http://ddsn.org/wiki">the wiki</a>.<br /><br />
+<span style="color: #bbb"><i>This is peer {{.Identity}}.</i></span>
+</small>
 </div>
 
 </body>

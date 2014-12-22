@@ -120,11 +120,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 		type indexContext struct {
 			PeerName  string
+			Identity  string
 			Account   int
 			AccName   string
 		}
 
-		tml.Execute(w, indexContext{PeerName, account.Id, account.Name})
+		tml.Execute(w, indexContext{PeerName, IdentityStr, account.Id, account.Name})
 	} else {
 		bytes, err := ioutil.ReadFile(Config.Server.TmlDir + "/login.html")
 
@@ -144,10 +145,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 		type loginContext struct {
 			PeerName  string
+			Identity  string
 			Message   string
 		}
 
-		tml.Execute(w, loginContext{PeerName, message})
+		tml.Execute(w, loginContext{PeerName, IdentityStr, message})
 	}
 }
 

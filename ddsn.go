@@ -41,7 +41,9 @@ var Config config
 var Sessions map[string]int
 var Database *sql.DB
 var Key *rsa.PrivateKey
+var PublicBytes []byte
 var Identity [32]byte
+var IdentityStr string
 var PeerName string
 
 func main() {
@@ -143,9 +145,10 @@ func main() {
 		}
 	}
 
-	publicBytes, _ := x509.MarshalPKIXPublicKey(&Key.PublicKey)
-	Identity = sha256.Sum256(publicBytes)
-	PeerName = hex.EncodeToString(Identity[:])[0:6]
+	PublicBytes, _ = x509.MarshalPKIXPublicKey(&Key.PublicKey)
+	Identity = sha256.Sum256(PublicBytes)
+	IdentityStr = hex.EncodeToString(Identity[:])
+	PeerName = IdentityStr[0:6]
 
 	fmt.Println("Your peer name is "+PeerName)
 
