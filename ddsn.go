@@ -20,13 +20,18 @@ import (
 )
 
 type server struct {
-	HttpPort    int
-	DdsnPort    int
-	TmlDir      string
-	ResDir      string
-	SqlDir      string
-	DbFile      string
-	RsaKeyFile  string
+	HttpPort     int
+	HttpsPort    int
+	DdsnPort     int
+	TmlDir       string
+	ResDir       string
+	SqlDir       string
+	DbFile       string
+	RsaKeyFile   string
+	Domain       string
+	Ssl          string
+	SslCertFile  string
+	SslKeyFile   string
 }
 
 type client struct {
@@ -156,10 +161,38 @@ func main() {
 
 	// <Start HTTP server>
 
-	fmt.Println("Listening for HTTP requests...")
-
 	http.HandleFunc("/", httpHandler)
-	http.ListenAndServe(":"+strconv.Itoa(Config.Server.HttpPort), nil)
+
+	quit := make(chan int)
+	listeners := 0
+
+	if Config.Server.Ssl == "Off" || Config.Server.Ssl == "Both" {
+		listeners++
+		go listenAndServe(Config.Server.Domain+":"+strconv.Itoa(Config.Server.HttpPort), nil, quit)
+	}
+	if Config.Server.Ssl == "On" || Config.Server.Ssl == "Both" {
+		listeners++
+		go listenAndServeTLS(Config.Server.Domain+":"+strconv.Itoa(Config.Server.HttpsPort), Config.Server.SslCertFile, Config.Server.SslKeyFile, nil, quit)
+	}
+	if Config.Server.Ssl != "On" && Config.Server.Ssl != "Off" && Config.Server.Ssl != "Both" {
+		fmt.Println("Invalid Ssl configuration '"+Config.Server.Ssl+"'. Allowed options are On, Off and Both")
+		return
+	}
+
+	for listeners > 0 {
+		<-quit
+		listeners--
+	}
 
 	// </Start HTTP server>
+}
+
+func listenAndServe(addr string, handler http.Handler, quit chan int) {
+	fmt.Println("Listening for HTTP requests on port "+strconv.Itoa(Config.Server.HttpPort)+"...")
+	http.ListenAndServe(addr, handler)
+}
+
+func listenAndServeTLS(addr string, certFile string, keyFile string, handler http.Handler, quit chan int) {
+	fmt.Println("Listening for HTTPS requests on port "+strconv.Itoa(Config.Server.HttpsPort)+"...")
+	http.ListenAndServeTLS(addr, certFile, keyFile, handler)
 }
