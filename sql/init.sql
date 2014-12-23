@@ -6,3 +6,10 @@ CREATE TABLE account (
 );
 
 INSERT INTO account (name, pass, salt) VALUES ('admin', '8e4122593d5c2053fd11a1e8a4b6f010d80605ee14ca114b3516bd31f89eaa10', 'AAAAAAAAAAAAAAAA');
+
+CREATE TABLE key (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	priv_key TEXT,
+	acc_id INTEGER NOT NULL,
+	FOREIGN KEY (acc_id) REFERENCES account(id)
+);

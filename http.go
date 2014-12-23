@@ -1,7 +1,11 @@
 package main
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/x509"
+	"encoding/pem"
 	"encoding/hex"
 	"fmt"
 	"html/template"
@@ -16,13 +20,18 @@ type Account struct {
 	Name  string
 }
 
+type OwnerKey struct {
+	Id    int
+	Hash  string
+}
+
 func httpHandler(w http.ResponseWriter, r *http.Request) {
 	request := r.URL.Path
 
-	if request == "/" {
-		indexHandler(w, r)
-	} else if strings.HasPrefix(request, "/res/") {
+	if strings.HasPrefix(request, "/res/") {
 		resourcesHandler(w, r)
+	} else {
+		htmlHandler(w, r)
 	}
 }
 
@@ -96,16 +105,49 @@ func loginChecker(w http.ResponseWriter, r *http.Request) (bool, Account, string
 	return loggedIn, account, message
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func htmlHandler(w http.ResponseWriter, r *http.Request) {
 	loggedIn, account, message := loginChecker(w, r)
 
 	// Display pages depending on logged in status
 
+	page := path.Clean("/" + r.URL.Path)
+
+	if page == "/" {
+		page = "/index.html"
+	}
+
 	if loggedIn {
-		bytes, err := ioutil.ReadFile(Config.Server.TmlDir + "/index.html")
+		// <Perform upload>
+
+		if file, _, err := r.FormFile("file"); err == nil {
+			defer file.Close()
+
+			// TODO
+		}
+
+		// </Perform upload>
+
+		// <Generate Key>
+
+		if r.FormValue("genkey") != "" {
+			key, err := rsa.GenerateKey(rand.Reader, 1024)
+
+			if err != nil {
+				message = "Error generating RSA key: " + err.Error()
+			} else {
+				block := pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)}
+
+				pemData := pem.EncodeToMemory(&block)
+
+				Database.Exec("INSERT INTO key (priv_key, acc_id) VALUES ($1, $2)", string(pemData), account.Id)
+			}
+		}
+
+		// </Generate Key>
+
+		bytes, err := ioutil.ReadFile(Config.Server.TmlDir + "/int" + page)
 
 		if err != nil {
-			fmt.Println(err)
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
@@ -118,19 +160,44 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		type indexContext struct {
+		type context struct {
 			PeerName  string
 			Identity  string
 			Account   int
 			AccName   string
+			Version   string
+			Message   string
+			Keys      []OwnerKey
 		}
 
-		tml.Execute(w, indexContext{PeerName, IdentityStr, account.Id, account.Name})
+		// <Retrieve keys>
+
+		rows, _ := Database.Query("SELECT id, priv_key FROM key WHERE acc_id = $1", account.Id)
+
+		keys := []OwnerKey{}
+
+		for rows.Next() {
+			var key OwnerKey
+			var pemStr string
+
+			rows.Scan(&key.Id, &pemStr)
+
+			block, _ := pem.Decode([]byte(pemStr))
+			privKey, _ := x509.ParsePKCS1PrivateKey(block.Bytes)
+			publicBytes, _ := x509.MarshalPKIXPublicKey(&privKey.PublicKey)
+			hashBytes := sha256.Sum256(publicBytes)
+			key.Hash = hex.EncodeToString(hashBytes[:])[0:12]
+
+			keys = append(keys, key)
+		}
+
+		// </Retrieve keys>
+
+		tml.Execute(w, context{PeerName, IdentityStr, account.Id, account.Name, Version, message, keys})
 	} else {
-		bytes, err := ioutil.ReadFile(Config.Server.TmlDir + "/login.html")
+		bytes, err := ioutil.ReadFile(Config.Server.TmlDir + "/ext" + page)
 
 		if err != nil {
-			fmt.Println(err)
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
@@ -143,13 +210,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		type loginContext struct {
+		type context struct {
 			PeerName  string
 			Identity  string
 			Message   string
+			Version   string
 		}
 
-		tml.Execute(w, loginContext{PeerName, IdentityStr, message})
+		tml.Execute(w, context{PeerName, IdentityStr, message, Version})
 	}
 }
 

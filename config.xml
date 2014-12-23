@@ -1,17 +1,22 @@
 <Data>
 	<Server>
+		<Domain>localhost</Domain>
 		<HttpPort>4498</HttpPort>
 		<HttpsPort>4499</HttpsPort>
-		<DdsnPort>4494</DdsnPort>
-		<TmlDir>tml</TmlDir>
-		<ResDir>tml</ResDir>
-		<SqlDir>sql</SqlDir>
-		<DbFile>ddsn.db</DbFile>
-		<RsaKeyFile>key.pem</RsaKeyFile>
-		<Domain>localhost</Domain>
+		
 		<Ssl>Off</Ssl> <!-- allowed options: On, Off, Both -->
 		<SslCertFile>ssl_cert.pem</SslCertFile>
 		<SslKeyFile>ssl_key.pem</SslKeyFile>
+
+		<DdsnPort>4494</DdsnPort>
+
+		<TmlDir>tml</TmlDir>
+		<ResDir>tml</ResDir>
+		<SqlDir>sql</SqlDir>
+		<BlkDir>blocks</BlkDir>
+
+		<DbFile>ddsn.db</DbFile>
+		<RsaKeyFile>key.pem</RsaKeyFile>
 	</Server>
 
 	<Client>

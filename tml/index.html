@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>DDSN Peer {{.PeerName}} | {{.AccName}}</title>
+<title>DDSN Peer {{.PeerName}}</title>
 <link href="res/style.css" rel="stylesheet" type="text/css">
 <link href="res/favicon.ico" rel="icon" type="image/x-icon" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -12,15 +12,14 @@
 <img src="res/logo.png" alt="DDSN logo" class="logo" />
 <div style="text-align: center"><b>Peer Frontend</b></div>
 <br />
-<a href="/?logout=1">Logout</a>
+<a href="/?logout=1" class="logout">Logout</a><br />
+<a href="/keys.html">Keys</a><br />
+<a href="/files.html">Files</a>
 </div>
 
 <div id="content">
-<h1>DDSN Peer {{.PeerName}} | {{.AccName}}</h1>
-<h2>Section 1</h2>
-Section 1
-<h2>Section 2</h2>
-Section 2
+<h1>DDSN Peer {{.PeerName}}</h1>
+Welcome, {{.AccName}}!
 </div>
 
 <br />
@@ -28,7 +27,7 @@ Section 2
 <div id="footer">
 <small>
 More information about DDSN on <a href="http://ddsn.org">the website</a> and on <a href="http://ddsn.org/wiki">the wiki</a>.<br /><br />
-<span style="color: #bbb"><i>This is peer {{.Identity}}.</i></span>
+<span style="color: #bbb"><i>This is peer {{.Identity}} running the official DDSN client version {{.Version}}.</i></span>
 </small>
 </div>
 

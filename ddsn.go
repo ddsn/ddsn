@@ -42,6 +42,7 @@ type config struct {
 	Client  client
 }
 
+const Version = "1.0.0.1"
 var Config config
 var Sessions map[string]int
 var Database *sql.DB
@@ -83,7 +84,8 @@ func main() {
 		initDb = true
 	}
 
-	Database, err = sql.Open("sqlite3", Config.Server.DbFile)
+	//Database, err = sql.Open("sqlite3", Config.Server.DbFile)
+	Database, err = sql.Open("sqlite3", ":memory:")
 	defer Database.Close()
 
 	if err != nil {
