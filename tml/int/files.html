@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>DDSN Peer {{.PeerName}}</title>
+<link href="res/style.css" rel="stylesheet" type="text/css">
+<link href="res/favicon.ico" rel="icon" type="image/x-icon" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<div id="menu">
+<img src="res/logo.png" alt="DDSN logo" class="logo" />
+<div style="text-align: center"><b>Peer Frontend</b></div>
+<br />
+<a href="/.">Home</a><br />
+<a href="/files.html">Files</a><br />
+<br />
+<a href="/?logout=1" class="logout">Logout</a><br />
+</div>
+
+<div id="content">
+<h1>DDSN Peer {{.PeerName}}</h1>
+<h2>My files</h2>
+<table>
+<tr><td>Name</td><td>Key</td><td>Size</td><td>Status</td></tr>
+</table>
+<h2>Upload file</h2>
+<form action="files.html" method="post" enctype="multipart/form-data">
+Key:
+<select name="key">
+{{range .Keys}} <option value="{{.Id}}">{{.Hash}}</option> {{end}}
+</select>
+<small>
+<a href="files.html?genkey=1">generate new key</a><br />
+<i>Only the owner of the key can delete and manipulate the file later on.</i>
+</small>
+<br /><br />
+<input name="file" type="file" size="50" maxlength="100000" accept="*/*" />
+<input type="submit" value="upload" />
+</form>
+</div>
+
+<br />
+
+<div id="footer">
+<small>
+More information about DDSN on <a href="http://ddsn.org">the website</a> and on <a href="http://ddsn.org/wiki">the wiki</a>.<br /><br />
+<span style="color: #bbb"><i>This is peer {{.Identity}} running the official DDSN peer software version {{.Version}}.</i></span>
+</small>
+</div>
+
+</body>
+</html>

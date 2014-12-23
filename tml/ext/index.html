@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>DDSN Peer {{.PeerName}}</title>
+<link href="res/style.css" rel="stylesheet" type="text/css">
+<link href="res/favicon.ico" rel="icon" type="image/x-icon" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<div id="menu">
+<img src="res/logo.png" alt="DDSN logo" class="logo" /><br />
+<div style="text-align: center"><b>Peer Frontend</b></div>
+</div>
+
+<div id="content">
+<h1>DDSN Peer {{.PeerName}}</h1>
+<h2>Login</h2>
+<form action="/" method="post">
+{{if .Message}}
+<span style="color:red"><i>{{.Message}}</i></span><br /><br />
+{{end}}
+<table>
+<tr><td>Account</td><td><input name="name" /></td></tr>
+<tr><td>Password</td><td><input name="pass" type="password" /></td></tr>
+<tr><td></td><td><input type="submit" value="login" /></td></tr>
+</table>
+</form>
+</div>
+
+<br />
+
+<div id="footer">
+<small>
+More information about DDSN on <a href="http://ddsn.org">the website</a> and on <a href="http://ddsn.org/wiki">the wiki</a>.<br /><br />
+<span style="color: #bbb"><i>This is peer {{.Identity}} running the official DDSN peer software version {{.Version}}.</i></span>
+</small>
+</div>
+
+</body>
+</html>
